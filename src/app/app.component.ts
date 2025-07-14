@@ -1,8 +1,9 @@
 import { CommonModule } from "@angular/common";
-import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Router, RouterOutlet, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { HeaderComponent } from "./header/header.component";
+import { DiscordAuthService } from "./services/discord-auth.service";
 
 @Component({
 	selector: "app-root",
@@ -19,7 +20,10 @@ export class AppComponent implements OnInit {
 	iframeLoaded = false;
 	iframeError = false;
 
-	constructor(private router: Router) {}
+	constructor(
+		private router: Router,
+		private discordAuthService: DiscordAuthService,
+	) {}
 
 	ngOnInit() {
 		// Listen to route changes
@@ -40,6 +44,9 @@ export class AppComponent implements OnInit {
 		// Set initial route based on current URL
 		this.currentRoute = this.router.url;
 		this.showWordle = this.router.url === "/wordle";
+
+		// Initialize Discord authentication check
+		this.discordAuthService.checkAuthStatus();
 	}
 
 	navigateToHome() {

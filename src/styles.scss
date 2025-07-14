@@ -1,4 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+@use "tailwindcss";
+
+* {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+}
+
+.font-normal,
+.font-normal * {
+  font-weight: 400;
+}
 
 /* Global styles for fullscreen layout */
 html, body {
@@ -8,13 +18,34 @@ html, body {
   overflow: hidden;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-
 app-root {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+}
+
+/* Discord Auth Component Animations */
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom animation classes to use with Tailwind */
+.dropdown-fade-in {
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+.avatar-hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.discord-icon-hover:hover svg {
+  transform: scale(1.1);
 }
