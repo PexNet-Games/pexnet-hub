@@ -37,7 +37,9 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 		private sanitizer: DomSanitizer,
 	) {
 		// Initialize with sanitized URL
-		this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(environment.wordleGameUrl);
+		this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+			environment.wordleGameUrl,
+		);
 	}
 
 	ngOnInit() {
@@ -113,7 +115,7 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 	private updateIframeUrl() {
 		const baseUrl = environment.wordleGameUrl;
 		let finalUrl: string;
-		
+
 		if (this.currentUser) {
 			const params = new URLSearchParams({
 				discordId: this.currentUser.userId,
@@ -123,7 +125,7 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 		} else {
 			finalUrl = baseUrl;
 		}
-		
+
 		// Sanitize the URL for security
 		this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl);
 	}
