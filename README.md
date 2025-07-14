@@ -33,9 +33,25 @@ git submodule update --remote
 
 ## Development server
 
-### Main Hub Application
+### 🚀 Quick Start (Recommended)
 
-To start the main hub development server, run:
+To start both the hub and Wordle game servers simultaneously:
+
+```bash
+npm run start:both
+```
+
+This will start:
+- **Main hub** on `http://localhost:4200` 
+- **Wordle game** on `http://localhost:4201`
+
+Then click the 🌍 **Wordle** icon in the header to play the game in fullscreen mode!
+
+### Individual Servers
+
+#### Main Hub Application
+
+To start only the main hub development server:
 
 ```bash
 npm start
@@ -43,9 +59,9 @@ npm start
 ng serve
 ```
 
-### Wordle Game
+#### Wordle Game
 
-To start the Wordle game development server, run:
+To start only the Wordle game development server:
 
 ```bash
 npm run start:wordle

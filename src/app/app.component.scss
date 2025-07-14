@@ -1,0 +1,98 @@
+// Base styles
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Header
+header {
+  flex: 0 0 auto;
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  z-index: 50;
+}
+
+// Main content
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &.fullscreen-main {
+    height: calc(100vh - 64px); // 64px = hauteur du header
+  }
+}
+
+// Wordle fullscreen container
+.wordle-fullscreen-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+// Wordle iframe fullscreen wrapper
+.wordle-iframe-fullscreen {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: white;
+}
+
+// Wordle iframe styles
+.wordle-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: white;
+}
+
+// Loading overlay
+.wordle-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(249, 250, 251, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+// Legacy styles (pour compatibilité)
+.wordle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wordle-iframe-container {
+  max-width: 100%;
+  margin: 0 auto;
+
+  iframe {
+    min-height: 500px;
+    transition: height 0.3s ease;
+    background-color: white;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+// Animation for loading spinner
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

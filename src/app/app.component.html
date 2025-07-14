@@ -1,1 +1,64 @@
-<router-outlet></router-outlet>
+<!-- Header -->
+<div class="sticky top-0 z-50">
+  <app-header [currentRoute]="currentRoute"></app-header>
+</div>
+
+<!-- Main Content -->
+<main class="bg-gray-50" [class.fullscreen-main]="showWordle">
+  <!-- Wordle Game (when visible) -->
+  <div *ngIf="showWordle" class="wordle-fullscreen-container">
+    <!-- Fullscreen Iframe Container -->
+    <div class="wordle-iframe-fullscreen">
+      <!-- Wordle Game Iframe -->
+      <iframe
+        src="http://localhost:4201"
+        class="wordle-iframe"
+        (load)="onIframeLoad()"
+        (error)="onIframeError()"
+        title="PexNet Wordle Game"
+        sandbox="allow-same-origin allow-scripts allow-forms"
+        frameborder="0"
+      >
+      </iframe>
+      <!-- Loading/Error State Overlay -->
+      <div *ngIf="!iframeLoaded" class="wordle-loading-overlay">
+        <div class="mx-auto max-w-md rounded-lg bg-white p-8 shadow-lg">
+          <div *ngIf="!iframeError" class="text-center">
+            <div
+              class="mb-4 inline-block h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"
+            ></div>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900">
+              Loading Wordle game...
+            </h3>
+            <p class="mb-4 text-gray-600">
+              Make sure the Wordle server is running:
+            </p>
+            <code class="block rounded bg-gray-800 p-3 text-sm text-green-400">
+              npm run start:wordle
+            </code>
+          </div>
+
+          <div *ngIf="iframeError" class="text-center">
+            <div class="mb-4 text-6xl text-red-500">⚠️</div>
+            <h3 class="mb-2 text-xl font-semibold text-gray-900">
+              Unable to load Wordle game
+            </h3>
+            <p class="mb-4 text-gray-600">
+              Please start the Wordle server first:
+            </p>
+            <code
+              class="mb-4 block rounded bg-gray-800 p-3 text-sm text-green-400"
+            >
+              npm run start:wordle
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Router Outlet for other content -->
+  <div [class.hidden]="showWordle">
+    <router-outlet></router-outlet>
+  </div>
+</main>

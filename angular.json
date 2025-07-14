@@ -123,6 +123,16 @@
 							{
 								"glob": "**/*",
 								"input": "projects/pexnet-wordle/public"
+							},
+							{
+								"glob": "**/*",
+								"input": "projects/pexnet-wordle/src/assets",
+								"output": "/assets"
+							},
+							{
+								"glob": "**/*",
+								"input": "projects/pexnet-wordle/src/assets/icons",
+								"output": "/icons"
 							}
 						],
 						"styles": ["projects/pexnet-wordle/src/styles.scss"],
@@ -177,6 +187,11 @@
 							{
 								"glob": "**/*",
 								"input": "projects/pexnet-wordle/public"
+							},
+							{
+								"glob": "**/*",
+								"input": "projects/pexnet-wordle/src/assets",
+								"output": "/assets"
 							}
 						],
 						"styles": ["projects/pexnet-wordle/src/styles.scss"],

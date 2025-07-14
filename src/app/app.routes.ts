@@ -9,12 +9,12 @@ export const routes: Routes = [
 	{
 		path: "home",
 		loadComponent: () =>
-			import("./pages/home/home.component").then((m) => m.HomeComponent),
+			import("./home/home.component").then((m) => m.HomeComponent),
 	},
 	{
 		path: "wordle",
 		loadComponent: () =>
-			import("./pages/wordle/wordle-page.component").then(
+			import("./wordle/wordle-page.component").then(
 				(m) => m.WordlePageComponent,
 			),
 	},
