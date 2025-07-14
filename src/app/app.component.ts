@@ -13,12 +13,7 @@ import { DiscordAuthService } from "./services/discord-auth.service";
 })
 export class AppComponent implements OnInit {
 	title = "pexnet-hub";
-	showWordle = false;
 	currentRoute = "/home";
-
-	// Iframe properties
-	iframeLoaded = false;
-	iframeError = false;
 
 	constructor(
 		private router: Router,
@@ -31,19 +26,10 @@ export class AppComponent implements OnInit {
 			.pipe(filter((event) => event instanceof NavigationEnd))
 			.subscribe((event: NavigationEnd) => {
 				this.currentRoute = event.url;
-				const wasShowingWordle = this.showWordle;
-				this.showWordle = event.url === "/wordle";
-
-				// Only reset iframe state when transitioning TO Wordle (not when already showing)
-				if (this.showWordle && !wasShowingWordle) {
-					this.iframeLoaded = false;
-					this.iframeError = false;
-				}
 			});
 
 		// Set initial route based on current URL
 		this.currentRoute = this.router.url;
-		this.showWordle = this.router.url === "/wordle";
 
 		// Initialize Discord authentication check
 		this.discordAuthService.checkAuthStatus();
@@ -55,20 +41,5 @@ export class AppComponent implements OnInit {
 
 	navigateToWordle() {
 		this.router.navigate(["/wordle"]);
-	}
-
-	onIframeLoad() {
-		this.iframeLoaded = true;
-		this.iframeError = false;
-		// Iframe now takes full available height via CSS
-	}
-
-	onIframeError() {
-		this.iframeLoaded = false;
-		this.iframeError = true;
-	}
-
-	openWordleInNewTab() {
-		window.open("http://localhost:4201", "_blank");
 	}
 }

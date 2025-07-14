@@ -49,3 +49,17 @@ app-root {
 .discord-icon-hover:hover svg {
   transform: scale(1.1);
 }
+
+/* Wordle loading overlay */
+.wordle-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(249, 250, 251, 0.95);
+  z-index: 10;
+}
