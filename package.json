@@ -4,7 +4,7 @@
 	"scripts": {
 		"ng": "ng",
 		"start": "ng serve",
-		"start:wordle": "ng serve pexnet-wordle",
+		"start:wordle": "ng serve pexnet-wordle --port 4201",
 		"build": "ng build",
 		"build:wordle": "ng build pexnet-wordle",
 		"watch": "ng build --watch --configuration development",
