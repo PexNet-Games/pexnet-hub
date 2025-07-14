@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component } from "@angular/core";
+import { RouterModule } from "@angular/router";
 
 @Component({
-  selector: 'app-wordle-page',
-  imports: [RouterModule],
-  template: `
+	selector: "app-wordle-page",
+	imports: [RouterModule],
+	template: `
     <div class="min-h-screen bg-gray-100">
       <!-- Navigation Header -->
       <header class="bg-white shadow-sm border-b">
@@ -33,17 +33,17 @@ import { RouterModule } from '@angular/router';
           <h1 class="text-4xl font-bold text-gray-900 mb-2">PexNet Wordle</h1>
           <p class="text-gray-600">Guess the word in 6 tries!</p>
         </div>
-        
+
         <!-- Integration Message -->
         <div class="bg-white rounded-lg shadow p-8 text-center">
           <div class="mb-6">
             <h2 class="text-2xl font-semibold text-gray-900 mb-4">Wordle Game Integration</h2>
             <p class="text-gray-600 mb-6">
-              The Wordle game has been successfully added as a submodule! 
+              The Wordle game has been successfully added as a submodule!
               To run the Wordle game independently, use the following commands:
             </p>
           </div>
-          
+
           <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
             <p class="font-mono text-sm text-gray-800 mb-2">
               <strong>To serve the Wordle game:</strong>
@@ -76,9 +76,9 @@ import { RouterModule } from '@angular/router';
           </div>
 
           <div class="mt-6">
-            <a 
-              href="http://localhost:4201" 
-              target="_blank" 
+            <a
+              href="http://localhost:4201"
+              target="_blank"
               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300"
             >
               Open Wordle Game (Port 4201)
@@ -91,7 +91,6 @@ import { RouterModule } from '@angular/router';
       </main>
     </div>
   `,
-  styleUrl: './wordle-page.component.scss'
+	styleUrl: "./wordle-page.component.scss",
 })
-export class WordlePageComponent {
-}
+export class WordlePageComponent {}
