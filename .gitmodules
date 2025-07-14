@@ -1,0 +1,3 @@
+[submodule "projects/pexnet-wordle"]
+	path = projects/pexnet-wordle
+	url = https://github.com/PexNet-Games/pexnet-wordle.git
