@@ -27,10 +27,11 @@ export class AppComponent implements OnInit {
 			.pipe(filter((event) => event instanceof NavigationEnd))
 			.subscribe((event: NavigationEnd) => {
 				this.currentRoute = event.url;
+				const wasShowingWordle = this.showWordle;
 				this.showWordle = event.url === "/wordle";
 
-				if (this.showWordle) {
-					// Reset iframe state when showing Wordle
+				// Only reset iframe state when transitioning TO Wordle (not when already showing)
+				if (this.showWordle && !wasShowingWordle) {
 					this.iframeLoaded = false;
 					this.iframeError = false;
 				}
