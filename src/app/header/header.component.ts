@@ -1,55 +1,60 @@
 import {
 	Component,
-	Input,
-	OnInit,
-	OnDestroy,
+	input,
+	signal,
+	computed,
+	inject,
+	ChangeDetectionStrategy,
+	effect,
 	HostListener,
 	ElementRef,
 } from "@angular/core";
 import { RouterModule } from "@angular/router";
-import { CommonModule } from "@angular/common";
 import {
 	DiscordAuthService,
 	DiscordUser,
 } from "../services/discord-auth.service";
-import { Subscription } from "rxjs";
 
 @Component({
 	selector: "app-header",
-	imports: [RouterModule, CommonModule],
+	imports: [RouterModule],
 	templateUrl: "./header.component.html",
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-	@Input() currentRoute = "";
+export class HeaderComponent {
+	currentRoute = input<string>("");
 
-	currentUser: DiscordUser | null = null;
-	isAuthenticated = false;
-	showUserMenu = false;
-	private subscriptions: Subscription[] = [];
+	currentUser = signal<DiscordUser | null>(null);
+	isAuthenticated = signal<boolean>(false);
+	showUserMenu = signal<boolean>(false);
 
-	constructor(
-		private discordAuthService: DiscordAuthService,
-		private elementRef: ElementRef,
-	) {}
+	private discordAuthService = inject(DiscordAuthService);
+	private elementRef = inject(ElementRef);
 
-	ngOnInit(): void {
-		// Subscribe to authentication status
-		this.subscriptions.push(
-			this.discordAuthService.isAuthenticated$.subscribe((isAuth) => {
-				this.isAuthenticated = isAuth;
-			}),
-		);
+	avatarUrl = computed(() => {
+		const user = this.currentUser();
+		return user ? this.discordAuthService.getAvatarUrl(user) : "";
+	});
 
-		// Subscribe to user data
-		this.subscriptions.push(
-			this.discordAuthService.user$.subscribe((user) => {
-				this.currentUser = user;
-			}),
-		);
-	}
+	constructor() {
+		// Subscribe to authentication status using effect
+		effect(() => {
+			const authSub = this.discordAuthService.isAuthenticated$.subscribe(
+				(isAuth) => {
+					this.isAuthenticated.set(isAuth);
+				},
+			);
 
-	ngOnDestroy(): void {
-		this.subscriptions.forEach((sub) => sub.unsubscribe());
+			const userSub = this.discordAuthService.user$.subscribe((user) => {
+				this.currentUser.set(user);
+			});
+
+			// Cleanup handled by effect automatically
+			return () => {
+				authSub.unsubscribe();
+				userSub.unsubscribe();
+			};
+		});
 	}
 
 	onDiscordLogin(): void {
@@ -58,11 +63,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
 	onLogout(): void {
 		this.discordAuthService.logout();
-		this.showUserMenu = false;
+		this.showUserMenu.set(false);
 	}
 
 	toggleUserMenu(): void {
-		this.showUserMenu = !this.showUserMenu;
+		this.showUserMenu.update((current) => !current);
 	}
 
 	// Prevent click event from propagating when clicking on user menu button
@@ -72,10 +77,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	}
 
 	getAvatarUrl(): string {
-		if (this.currentUser) {
-			return this.discordAuthService.getAvatarUrl(this.currentUser);
-		}
-		return "";
+		const user = this.currentUser();
+		return user ? this.discordAuthService.getAvatarUrl(user) : "";
 	}
 
 	// Close user menu when clicking outside
@@ -83,7 +86,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 	onDocumentClick(event: Event): void {
 		const target = event.target as HTMLElement;
 		if (!this.elementRef.nativeElement.contains(target)) {
-			this.showUserMenu = false;
+			this.showUserMenu.set(false);
 		}
 	}
 }

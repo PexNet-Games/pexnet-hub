@@ -1,6 +1,10 @@
-import { Component, OnInit, OnDestroy, signal } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
+import {
+	Component,
+	signal,
+	inject,
+	ChangeDetectionStrategy,
+	effect,
+} from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import {
 	DiscordAuthService,
@@ -11,53 +15,46 @@ import {
 	WordleUserData,
 } from "../services/wordle-api.service";
 import { environment } from "../../environments/environment";
-import { Subscription } from "rxjs";
 
 @Component({
 	selector: "app-wordle-page",
-	imports: [CommonModule, RouterModule],
+	imports: [],
 	templateUrl: "./wordle-page.component.html",
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WordlePageComponent implements OnInit, OnDestroy {
+export class WordlePageComponent {
 	isLoading = signal<boolean>(false);
 	showWordle = signal<boolean>(false);
 	currentRoute = "/wordle";
-	iframeUrl: SafeResourceUrl;
-	isAuthenticated = false;
-	authCheckComplete = false;
+	iframeUrl = signal<SafeResourceUrl | null>(null);
+	isAuthenticated = signal<boolean>(false);
+	authCheckComplete = signal<boolean>(false);
+	currentUser = signal<DiscordUser | null>(null);
 
-	currentUser: DiscordUser | null = null;
-
-	private subscriptions: Subscription[] = [];
+	private discordAuth = inject(DiscordAuthService);
+	private wordleIntegration = inject(WordleIntegrationService);
+	private sanitizer = inject(DomSanitizer);
 	private messageListener: ((event: MessageEvent) => void) | null = null;
 
-	constructor(
-		public discordAuth: DiscordAuthService,
-		private wordleIntegration: WordleIntegrationService,
-		private sanitizer: DomSanitizer,
-	) {
+	constructor() {
 		// Initialize with sanitized URL
-		this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-			environment.wordleGameUrl,
+		this.iframeUrl.set(
+			this.sanitizer.bypassSecurityTrustResourceUrl(environment.wordleGameUrl),
 		);
-	}
 
-	ngOnInit() {
 		this.setupMessageListener();
 		this.loadUserData();
 
-		// Don't start loading the game until authentication is verified
-		// The game will only load if user is authenticated
+		// Effect to update iframe URL when user changes
+		effect(() => {
+			const user = this.currentUser();
+			if (user) {
+				this.updateIframeUrl();
+			}
+		});
 	}
 
-	ngOnDestroy() {
-		this.subscriptions.forEach((sub) => sub.unsubscribe());
-		if (this.messageListener) {
-			this.wordleIntegration.removeMessageListener(this.messageListener);
-		}
-	}
-
-	private setupMessageListener() {
+	private setupMessageListener(): void {
 		this.messageListener = this.wordleIntegration.setupMessageListener(
 			(event) => {
 				if (event.data.type === "REQUEST_USER_DATA") {
@@ -70,36 +67,34 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	private sendUserDataToWordle(targetWindow: Window) {
+	private sendUserDataToWordle(targetWindow: Window): void {
 		let userData: WordleUserData | null = null;
 
-		if (this.currentUser) {
+		const user = this.currentUser();
+		if (user) {
 			userData = {
-				discordId: this.currentUser.userId,
-				username: this.currentUser.username,
-				avatar: this.discordAuth.getAvatarUrl(this.currentUser),
+				discordId: user.userId,
+				username: user.username,
+				avatar: this.discordAuth.getAvatarUrl(user),
 			};
 		}
 
 		this.wordleIntegration.sendUserDataToWordle(targetWindow, userData);
 	}
 
-	private loadUserData() {
-		const userSub = this.discordAuth.user$.subscribe((user) => {
-			this.currentUser = user;
-			this.isAuthenticated = !!user;
-			this.authCheckComplete = true;
-			console.log(
-				"🚀 ~ WordlePageComponent ~ userSub ~ this.isAuthenticated:",
-				this.isAuthenticated,
-			);
+	private loadUserData(): void {
+		// Subscribe to user data directly (not in an effect)
+		this.discordAuth.user$.subscribe((user) => {
+			this.currentUser.set(user);
+			this.isAuthenticated.set(!!user);
+			this.authCheckComplete.set(true);
 
 			console.log("Wordle Page - Auth check:", {
 				user: !!user,
-				authenticated: this.isAuthenticated,
+				authenticated: this.isAuthenticated(),
 			});
 
-			if (this.isAuthenticated) {
+			if (this.isAuthenticated()) {
 				// Only show the game if user is authenticated
 				this.showWordle.set(true);
 				this.updateIframeUrl();
@@ -109,17 +104,17 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 				console.log("Wordle Page - Blocking access: User not authenticated");
 			}
 		});
-		this.subscriptions.push(userSub);
 	}
 
-	private updateIframeUrl() {
+	private updateIframeUrl(): void {
 		const baseUrl = environment.wordleGameUrl;
 		let finalUrl: string;
 
-		if (this.currentUser) {
+		const user = this.currentUser();
+		if (user) {
 			const params = new URLSearchParams({
-				discordId: this.currentUser.userId,
-				username: this.currentUser.username,
+				discordId: user.userId,
+				username: user.username,
 			});
 			finalUrl = `${baseUrl}?${params.toString()}`;
 		} else {
@@ -127,10 +122,10 @@ export class WordlePageComponent implements OnInit, OnDestroy {
 		}
 
 		// Sanitize the URL for security
-		this.iframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl);
+		this.iframeUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl));
 	}
 
-	onIframeLoad() {
+	onIframeLoad(): void {
 		this.isLoading.set(false);
 
 		// Send initial data to the iframe once it loads
