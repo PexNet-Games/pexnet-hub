@@ -67,6 +67,10 @@ export class WordlePageComponent {
 			(event) => {
 				if (event.data.type === "REQUEST_USER_DATA") {
 					this.sendUserDataToWordle(event.source as Window);
+				} else if (event.data.type === "REQUEST_THEME") {
+					// Send current theme immediately when requested
+					const currentTheme = this.themeService.appliedTheme();
+					this.sendThemeToWordle(currentTheme);
 				} else if (event.data.type === "GAME_STATUS_UPDATE") {
 					// Optional: Handle game status updates for hub UI
 					console.log("Game status update:", event.data);
@@ -150,14 +154,17 @@ export class WordlePageComponent {
 		this.isLoading.set(false);
 
 		// Send initial data to the iframe once it loads
-		setTimeout(() => {
-			const iframe = document.querySelector("iframe") as HTMLIFrameElement;
-			if (iframe?.contentWindow) {
-				this.sendUserDataToWordle(iframe.contentWindow);
-				// Also send current theme
+		const iframe = document.querySelector("iframe") as HTMLIFrameElement;
+		if (iframe?.contentWindow) {
+			// Send theme first to prevent flashing - try multiple times for reliability
+			this.sendThemeToWordle(this.themeService.appliedTheme());
+			this.sendUserDataToWordle(iframe.contentWindow);
+
+			// Send theme again after a very short delay to ensure it's received
+			setTimeout(() => {
 				this.sendThemeToWordle(this.themeService.appliedTheme());
-			}
-		}, 1000);
+			}, 10);
+		}
 	}
 
 	onDiscordLogin(): void {
