@@ -20,7 +20,7 @@ export class ThemeService {
 		const savedTheme = this.document.defaultView?.localStorage.getItem(
 			"theme",
 		) as Theme | null;
-		this.currentTheme.set(savedTheme || "light");
+		this.currentTheme.set(savedTheme || "auto");
 
 		// Effect to apply theme changes
 		effect(() => {

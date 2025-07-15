@@ -4,7 +4,6 @@ import {
 	signal,
 	computed,
 	inject,
-	ChangeDetectionStrategy,
 	effect,
 	HostListener,
 	ElementRef,
@@ -28,6 +27,7 @@ export class HeaderComponent {
 	currentUser = signal<DiscordUser | null>(null);
 	isAuthenticated = signal<boolean>(false);
 	showUserMenu = signal<boolean>(false);
+	showMobileMenu = signal<boolean>(false);
 
 	private discordAuthService = inject(DiscordAuthService);
 	private elementRef = inject(ElementRef);
@@ -71,6 +71,14 @@ export class HeaderComponent {
 		this.showUserMenu.update((current) => !current);
 	}
 
+	toggleMobileMenu(): void {
+		this.showMobileMenu.update((current) => !current);
+	}
+
+	closeMobileMenu(): void {
+		this.showMobileMenu.set(false);
+	}
+
 	// Prevent click event from propagating when clicking on user menu button
 	onUserMenuClick(event: Event): void {
 		event.stopPropagation();
@@ -88,6 +96,7 @@ export class HeaderComponent {
 		const target = event.target as HTMLElement;
 		if (!this.elementRef.nativeElement.contains(target)) {
 			this.showUserMenu.set(false);
+			this.showMobileMenu.set(false);
 		}
 	}
 }
