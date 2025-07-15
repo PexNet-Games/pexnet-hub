@@ -102,15 +102,47 @@
           </div>
         }
 
-        @if (showWordle() && !isLoading()) {
-          <iframe
-            [src]="iframeUrl()"
-            title="PexNet Wordle Game"
-            class="h-full w-full border-0"
-            sandbox="allow-same-origin allow-scripts allow-forms"
-            frameborder="0"
-            (load)="onIframeLoad()"
-          ></iframe>
+        @if (showWordle()) {
+          <!-- Iframe Container with Theme Sync Overlay -->
+          <div class="relative h-full w-full">
+            <iframe
+              [src]="iframeUrl()"
+              title="PexNet Wordle Game"
+              class="h-full w-full border-0"
+              sandbox="allow-same-origin allow-scripts allow-forms"
+              frameborder="0"
+              (load)="onIframeLoad()"
+            ></iframe>
+
+            <!-- Theme Synchronization Overlay -->
+            @if ((!themeSync() || !componentLoaded()) && !isLoading()) {
+              <div
+                class="absolute inset-0 z-10 flex items-center justify-center bg-gray-50 transition-opacity duration-300 dark:bg-gray-900"
+              >
+                <div class="text-center">
+                  <div
+                    class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600 dark:border-blue-400"
+                  ></div>
+                  @if (!componentLoaded()) {
+                    <p
+                      class="text-sm font-medium text-gray-600 dark:text-gray-300"
+                    >
+                      Chargement du jeu...
+                    </p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Initialisation en cours
+                    </p>
+                  } @else {
+                    <p
+                      class="text-sm font-medium text-gray-600 dark:text-gray-300"
+                    >
+                      Synchronisation du thème...
+                    </p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
         }
       </div>
     </div>
