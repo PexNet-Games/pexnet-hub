@@ -1,28 +1,71 @@
 @use "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-* {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 700;
+/* Tailwind components and utilities */
+@layer base {
+  * {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+  }
+
+  .font-normal,
+  .font-normal * {
+    font-weight: 400;
+  }
+
+  /* Global styles for fullscreen layout */
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
 }
 
-.font-normal,
-.font-normal * {
-  font-weight: 400;
-}
+/* Theme overrides with highest specificity - placed after Tailwind */
+@layer utilities {
+  /* Light theme */
+  html.light,
+  html.light body,
+  body.light {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+  }
 
-/* Global styles for fullscreen layout */
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
+  html.light app-root {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+  }
 
-app-root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+  html.light main {
+    background-color: #f9fafb !important;
+  }
+
+  /* Dark theme */
+  html.dark,
+  html.dark body,
+  body.dark {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+  }
+
+  html.dark app-root {
+    background-color: #111827 !important;
+    color: #f9fafb !important;
+  }
+
+  html.dark main {
+    background-color: #111827 !important;
+  }
 }
 
 /* Discord Auth Component Animations */

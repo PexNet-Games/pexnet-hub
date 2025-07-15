@@ -8,6 +8,7 @@ import { Router, RouterOutlet, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { HeaderComponent } from "./header/header.component";
 import { DiscordAuthService } from "./services/discord-auth.service";
+import { ThemeService } from "./services/theme.service";
 
 @Component({
 	selector: "app-root",
@@ -22,6 +23,7 @@ export class AppComponent {
 
 	private router = inject(Router);
 	private discordAuthService = inject(DiscordAuthService);
+	private themeService = inject(ThemeService); // Initialize theme service
 
 	constructor() {
 		// Listen to route changes

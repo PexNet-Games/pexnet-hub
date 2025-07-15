@@ -14,12 +14,13 @@ import {
 	DiscordAuthService,
 	DiscordUser,
 } from "../services/discord-auth.service";
+import { ThemeToggleComponent } from "../components/theme-toggle.component";
 
 @Component({
 	selector: "app-header",
-	imports: [RouterModule],
+	imports: [RouterModule, ThemeToggleComponent],
 	templateUrl: "./header.component.html",
-	changeDetection: ChangeDetectionStrategy.OnPush,
+	//	changeDetection: ChangeDetectionStrategy.OnPush,// Temporarily disabled for theme debugging
 })
 export class HeaderComponent {
 	currentRoute = input<string>("");

@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideZoneChangeDetection } from "@angular/core";
+import {
+	ApplicationConfig,
+	provideZoneChangeDetection,
+	APP_INITIALIZER,
+} from "@angular/core";
 import { provideRouter } from "@angular/router";
 import {
 	provideHttpClient,
@@ -6,6 +10,7 @@ import {
 	HttpInterceptorFn,
 } from "@angular/common/http";
 import { catchError, throwError } from "rxjs";
+import { ThemeService } from "./services/theme.service";
 
 import { routes } from "./app.routes";
 
@@ -40,10 +45,24 @@ const errorInterceptor: HttpInterceptorFn = (req, next) => {
 	);
 };
 
+// Theme initialization function
+function initializeTheme(): () => void {
+	return () => {
+		// This function is called before the app starts
+		console.log("Initializing theme...");
+	};
+}
+
 export const appConfig: ApplicationConfig = {
 	providers: [
 		provideZoneChangeDetection({ eventCoalescing: true }),
 		provideRouter(routes),
 		provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+		{
+			provide: APP_INITIALIZER,
+			useFactory: initializeTheme,
+			multi: true,
+			deps: [ThemeService],
+		},
 	],
 };

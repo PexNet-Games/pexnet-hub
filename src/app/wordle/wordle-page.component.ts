@@ -14,6 +14,7 @@ import {
 	WordleIntegrationService,
 	WordleUserData,
 } from "../services/wordle-api.service";
+import { ThemeService } from "../services/theme.service";
 import { environment } from "../../environments/environment";
 
 @Component({
@@ -34,6 +35,7 @@ export class WordlePageComponent {
 	private discordAuth = inject(DiscordAuthService);
 	private wordleIntegration = inject(WordleIntegrationService);
 	private sanitizer = inject(DomSanitizer);
+	private themeService = inject(ThemeService);
 	private messageListener: ((event: MessageEvent) => void) | null = null;
 
 	constructor() {
@@ -51,6 +53,12 @@ export class WordlePageComponent {
 			if (user) {
 				this.updateIframeUrl();
 			}
+		});
+
+		// Effect to send theme updates to iframe
+		effect(() => {
+			const appliedTheme = this.themeService.appliedTheme();
+			this.sendThemeToWordle(appliedTheme);
 		});
 	}
 
@@ -80,6 +88,19 @@ export class WordlePageComponent {
 		}
 
 		this.wordleIntegration.sendUserDataToWordle(targetWindow, userData);
+	}
+
+	private sendThemeToWordle(theme: "light" | "dark"): void {
+		const iframe = document.querySelector("iframe") as HTMLIFrameElement;
+		if (iframe?.contentWindow) {
+			iframe.contentWindow.postMessage(
+				{
+					type: "THEME_UPDATE",
+					theme: theme,
+				},
+				environment.wordleGameUrl,
+			);
+		}
 	}
 
 	private loadUserData(): void {
@@ -133,6 +154,8 @@ export class WordlePageComponent {
 			const iframe = document.querySelector("iframe") as HTMLIFrameElement;
 			if (iframe?.contentWindow) {
 				this.sendUserDataToWordle(iframe.contentWindow);
+				// Also send current theme
+				this.sendThemeToWordle(this.themeService.appliedTheme());
 			}
 		}, 1000);
 	}
